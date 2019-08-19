@@ -1,0 +1,45 @@
+{
+    "name": "slim/slim-skeleton",
+    "description": "Example of a blog restful API using ADR (Action-Domain-Responder) and DDD-Lite (Domain-Drive-Design) patterns",
+    "keywords": ["microframework", "rest", "router", "psr7"],
+    "homepage": "https://github.com/ygoralcantara",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ygor",
+            "email": "ygoralcantaramedeiros@gmail.com"
+        }
+    ],
+    "require": {
+        "ext-json": "*",
+        "monolog/monolog": "^1.24",
+        "doctrine/orm": "^2.6.2",
+        "php": ">=7.1",
+        "php-di/php-di": "^6.0",
+        "slim/psr7": "dev-master",
+        "slim/slim": "^4"
+    },
+    "require-dev": {
+        "fzaninotto/faker": "^1.8",
+        "phpunit/phpunit": "^8",
+        "robmorgan/phinx": "^0.10.8"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "process-timeout": 0,
+        "sort-packages": true
+    },
+    "scripts": {
+        "start": "php -S localhost:8080 -t public",
+        "test": "phpunit"
+    }
+}
