@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+use App\Application\Middleware\AppJsonMiddleware;
 use Slim\App;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -11,8 +12,9 @@ return function (App $app) {
 
     $app->group('/users', function (Group $group) use ($container) {
         $group->get('', \App\Application\Actions\User\ListUsersAction::class);
+        $group->post('', \App\Application\Actions\User\InsertUserAction::class)->addMiddleware(new AppJsonMiddleware);
         $group->get('/{username}', \App\Application\Actions\User\ViewUserAction::class);
-        $group->post('', \App\Application\Actions\User\InsertUserAction::class);
-        $group->put('/{username}', \App\Application\Actions\User\UpdateUserAction::class);
+        $group->put('/{username}', \App\Application\Actions\User\UpdateUserAction::class)->addMiddleware(new AppJsonMiddleware);
+        $group->delete('/{username}', \App\Application\Actions\User\RemoveUserAction::class);
     });
 };

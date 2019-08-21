@@ -7,6 +7,7 @@ use App\Domain\User\User;
 use App\Domain\User\UserAlreadyExistsException;
 use App\Domain\User\UserValidator;
 use Psr\Http\Message\ResponseInterface as Response;
+use Slim\Exception\HttpBadRequestException;
 
 class InsertUserAction extends UserAction {
     
@@ -15,13 +16,13 @@ class InsertUserAction extends UserAction {
      */
     public function action() : Response
     {
-        $params = $this->request->getParsedBody();
+        $input = json_decode($this->request->getBody(), true);
 
         $user = new User(
-            (isset($params['username']) ? $params['username'] : ''),
-            (isset($params['name']) ? $params['name'] : ''),
-            (isset($params['email']) ? $params['email'] : ''),
-            (isset($params['password']) ? $params['password'] : ''),
+            (isset($input['username']) ? $input['username'] : ''),
+            (isset($input['name']) ? $input['name'] : ''),
+            (isset($input['email']) ? $input['email'] : ''),
+            (isset($input['password']) ? $input['password'] : ''),
         );
 
         $userValidator = new UserValidator($user);

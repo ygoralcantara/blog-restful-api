@@ -26,15 +26,11 @@ class UpdateUserAction extends UserAction {
         }
 
         /** VALIDATE PARAMS */
-        $params = $this->request->getParsedBody();
+        $input = json_decode($this->request->getBody(), true);
 
-        //return $this->respondWithData($params);
-
-        $user->setName((isset($params['name']) ? $params['name'] : ''));
-        $user->setEmail((isset($params['email']) ? $params['email'] : ''));
-        $user->setPassword((isset($params['password']) ? $params['password'] : ''));
-
-        return $this->respondWithData($user);
+        $user->setName((isset($input['name']) ? $input['name'] : ''));
+        $user->setEmail((isset($input['email']) ? $input['email'] : ''));
+        $user->setPassword((isset($input['password']) ? $input['password'] : ''));
 
         $userValidator = new UserValidator($user);
 

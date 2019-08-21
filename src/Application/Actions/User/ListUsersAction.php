@@ -19,10 +19,10 @@ class ListUsersAction extends UserAction
         /** GET QUERY PARAMS */
         $uri = $this->request->getUri()->getQuery();
 
-        $params = $this->request->getQueryParams();
+        $input = $this->request->getQueryParams();
 
         /** IF PARAMS IS EMPTY THEN RETURN ALL USERS */
-        if (empty($params)) {
+        if (empty($input)) {
             $users = $this->userRepository->findAll();
 
             $this->logger->info("Users list was viewed");
@@ -33,7 +33,7 @@ class ListUsersAction extends UserAction
         /** CHECK IF URL IS VALID WITH REGEX*/
         $b = preg_match_all($this->regex_uri, $uri);
 
-        if (sizeof($params) != $b) {
+        if (sizeof($input) != $b) {
             $this->logger->error("HttpBadRequestException launched");
 
             throw new HttpBadRequestException($this->request, "Malformed URL.");
@@ -42,22 +42,22 @@ class ListUsersAction extends UserAction
         /** SET UP QUERY PARAMS */
         $order = null;
 
-        if (isset($params['sort'])) {
-            list($k, $v) = explode('.', $params['sort']);
+        if (isset($input['sort'])) {
+            list($k, $v) = explode('.', $input['sort']);
 
             $order[$k] = $v;
         }
 
-        $limit = (isset($params['limit'])) ? $params['limit'] : null;
+        $limit = (isset($input['limit'])) ? $input['limit'] : null;
 
-        $offset = (isset($params['offset'])) ? $params['offset'] : null;
+        $offset = (isset($input['offset'])) ? $input['offset'] : null;
 
-        unset($params['sort']);
-        unset($params['limit']);
-        unset($params['offset']);
+        unset($input['sort']);
+        unset($input['limit']);
+        unset($input['offset']);
 
         /** GET USERS BY FILTER, SORT AND PAGINATION */
-        $users = $this->userRepository->findBy($params, $order, $limit, $offset);
+        $users = $this->userRepository->findBy($input, $order, $limit, $offset);
 
         if (empty($users)) {
             $this->logger->error("UserNotFoundException launched");
