@@ -3,11 +3,13 @@ declare(strict_types=1);
 
 namespace App\Application\Actions;
 
+use App\Application\Handlers\HttpErrorHandler;
 use App\Domain\DomainException\DomainRecordNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
+use Slim\Exception\HttpInternalServerErrorException;
 use Slim\Exception\HttpNotFoundException;
 
 abstract class Action
@@ -104,6 +106,19 @@ abstract class Action
     protected function respondWithData($data = null): Response
     {
         $payload = new ActionPayload(200, $data);
+        return $this->respond($payload);
+    }
+
+    /**
+     * @param array|object|null $data
+     * @param int $status
+     * @param string $type
+     * @param string|null $description
+     * @return Response
+     */
+    protected function respondWithErrors($data = null, $status, $type, ?string $description) : Response
+    {
+        $payload = new ActionPayload($status, $data, new ActionError($type, $description));
         return $this->respond($payload);
     }
 

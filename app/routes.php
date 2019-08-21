@@ -1,8 +1,6 @@
 <?php
 declare(strict_types=1);
 
-use App\Application\Actions\User\ListUsersAction;
-use App\Application\Actions\User\ViewUserAction;
 use Slim\App;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -12,7 +10,9 @@ return function (App $app) {
     $container = $app->getContainer();
 
     $app->group('/users', function (Group $group) use ($container) {
-        $group->get('', ListUsersAction::class);
-        $group->get('/{username}', ViewUserAction::class);
+        $group->get('', \App\Application\Actions\User\ListUsersAction::class);
+        $group->get('/{username}', \App\Application\Actions\User\ViewUserAction::class);
+        $group->post('', \App\Application\Actions\User\InsertUserAction::class);
+        $group->put('/{username}', \App\Application\Actions\User\UpdateUserAction::class);
     });
 };

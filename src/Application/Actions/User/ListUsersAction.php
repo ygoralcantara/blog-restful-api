@@ -3,9 +3,7 @@ declare(strict_types=1);
 
 namespace App\Application\Actions\User;
 
-use App\Domain\DomainException\DomainRecordNotFoundException;
 use App\Domain\User\UserNotFoundException;
-use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Exception\HttpBadRequestException;
 
@@ -38,7 +36,7 @@ class ListUsersAction extends UserAction
         if (sizeof($params) != $b) {
             $this->logger->error("HttpBadRequestException launched");
 
-            throw new HttpBadRequestException($this->request, "Malformed URL formed.");
+            throw new HttpBadRequestException($this->request, "Malformed URL.");
         }
 
         /** SET UP QUERY PARAMS */
