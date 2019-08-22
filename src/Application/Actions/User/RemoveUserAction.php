@@ -24,6 +24,8 @@ class RemoveUserAction extends UserAction {
 
         $this->userRepository->remove($user);
 
+        $this->logger->info("User of username `${username}` removed with success");
+
         return $this->respondWithData("User of username `${username}` removed with success");
     }
 }

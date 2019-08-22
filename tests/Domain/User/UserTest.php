@@ -12,7 +12,7 @@ class UserTest extends TestCase {
      *
      * @return void
      */
-    public function testJsonSerialize() : void
+    public function testUserJsonSerialize() : void
     {
         $faker = \Faker\Factory::create('pt_BR');
 
