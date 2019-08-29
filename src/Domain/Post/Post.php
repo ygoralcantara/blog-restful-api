@@ -5,7 +5,7 @@ namespace App\Domain\Post;
 use JsonSerializable;
 
 class Post implements JsonSerializable{
-    
+
     /**
      * Post ID
      *
