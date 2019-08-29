@@ -15,7 +15,7 @@ return function (ContainerBuilder $containerBuilder) {
                 'level' => Logger::DEBUG,
             ],
             'database' => [
-                'driver'    => 'pdo_pgsql',
+                'driver'    => 'pgsql',
                 'host'      => 'localhost',
                 'dbname'    => 'blog_php',
                 'user'      => 'root',
@@ -25,10 +25,10 @@ return function (ContainerBuilder $containerBuilder) {
             'phinx' => [
                 'migration' => __DIR__ . '/../db/migrations',
                 'seed'      => __DIR__ . '/../db/seeds',
-                'driver'    => 'pgsql',
             ],
             'doctrine' => [
                 'entity_path' => __DIR__ . '/../src/Infrastructure/Persistence/Doctrine/Mapping',
+                'driver'      => 'pdo_pgsql',
             ],
         ],
     ]);

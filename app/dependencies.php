@@ -10,6 +10,7 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Processor\UidProcessor;
 use Psr\Container\ContainerInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use Slim\Exception\HttpInternalServerErrorException;
 
 return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
@@ -34,12 +35,50 @@ return function (ContainerBuilder $containerBuilder) {
         EntityManagerInterface::class => function (ContainerInterface $c) {
             $settings = $c->get('settings');
 
+            $settings['database']['driver'] = $settings['doctrine']['driver'];
+
             $config = Setup::createXMLMetadataConfiguration([
                 $settings['doctrine']['entity_path'],
             ], true);
 
             return EntityManager::create($settings['database'], $config);
         },
+
+        //PDO
+        'pdo-conn' => function (ContainerInterface $c) {
+            $database = $c->get('settings')['database'];
+
+            $dsn = $database['driver'] . ":host=" . $database['host'] . ";port=" . $database['port'] . ";dbname=" . $database['dbname'];
+
+            try {
+                $conn = new PDO($dsn, $database['user'], $database['password'], array(
+                    'PDO::ATTR_ERRMODE'      => 'PDO::ERRMODE_EXCEPTION',
+                    'PDO::ATTR_ORACLE_NULLS' => 'PDO::NULL_EMPTY_STRING'
+                ));
+
+            } catch (PDOException $e) {
+                throw new InvalidArgumentException($e->getMessage(), 500);
+            }
+
+            return $conn;
+        },
         
     ]);
 };
+
+/*
+try {
+
+                self::$instance = new PDO(self::$dsn, DB_USER, DB_PASSWORD, array(
+                    'PDO::ATTR_ERRMODE' => 'PDO::ERRMODE_EXCEPTION',
+                    'PDO::ATTR_ORACLE_NULLS' => 'PDO::NULL_EMPTY_STRING'
+                ));
+
+            } catch (PDOException $e) {
+                $e->getMessage();
+            }
+
+        }
+
+        return self::$instance;
+*/

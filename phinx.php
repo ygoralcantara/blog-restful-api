@@ -24,7 +24,7 @@ return [
         'default_migration_table' => 'phinxlog',
         'default_database'        => 'development',
         'development'             => [
-            'adapter' => $phinx['driver'],
+            'adapter' => $database['driver'],
             'host'    => $database['host'],
             'name'    => $database['dbname'],
             'user'    => $database['user'],

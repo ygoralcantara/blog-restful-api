@@ -1,17 +1,15 @@
 <?php
 
-namespace Tests\Infrastructure\Persistence\Doctrine;
+namespace App\Infrastructure\Persistence\PDO;
 
+use Tests\TestCase;
 use App\Domain\User\User;
 use App\Domain\User\UserRepository;
-use App\Infrastructure\Persistence\Doctrine\DoctrineUserRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use Tests\TestCase;
 
-class DoctrineUserRepositoryTest extends TestCase {
+class PDOUserRepositoryTest extends TestCase {
 
     /**
-     * Doctrine User Repository
+     * PDO User Repository
      *
      * @var UserRepository
      */
@@ -22,11 +20,11 @@ class DoctrineUserRepositoryTest extends TestCase {
      *
      * @return void
      */
-    protected function setUp() : void
+    protected function setUp(): void
     {
-        $em = $this->getAppInstance()->getContainer()->get(EntityManagerInterface::class);
+        $container = $this->getAppInstance()->getContainer();
 
-        $this->userRepository = new DoctrineUserRepository($em);
+        $this->userRepository = new PDOUserRepository($container);
     }
 
     /**
@@ -35,7 +33,7 @@ class DoctrineUserRepositoryTest extends TestCase {
      * @return void
      */
     public function testFindAll() : void
-    {    
+    {
         $users = $this->userRepository->findAll();
 
         $this->assertNotEmpty($users);
@@ -160,7 +158,7 @@ class DoctrineUserRepositoryTest extends TestCase {
         $this->assertEquals($user->getEmail(), $editUser->getEmail());
     }
 
-    /**
+        /**
      * Test save all users to database
      *
      * @return void
@@ -196,7 +194,7 @@ class DoctrineUserRepositoryTest extends TestCase {
         }
     }
 
-    /**
+        /**
      * Test remove a user from database
      *
      * @return void

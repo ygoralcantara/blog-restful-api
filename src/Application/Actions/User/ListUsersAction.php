@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Application\Actions\User;
 
+use App\Domain\DomainException\DomainRecordNotFoundException;
 use App\Domain\User\UserNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Exception\HttpBadRequestException;
@@ -62,7 +63,7 @@ class ListUsersAction extends UserAction
         if (empty($users)) {
             $this->logger->error("UserNotFoundException launched");
 
-            throw new UserNotFoundException("No users found");
+            throw new DomainRecordNotFoundException("No users found");
         }
 
         $this->logger->info("Users list with filter, sort and pagination was viewed");
