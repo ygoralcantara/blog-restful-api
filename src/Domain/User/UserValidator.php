@@ -29,16 +29,14 @@ class UserValidator {
      */
     public function validate() : bool
     {
-        $username = $this->assertUsername($this->user->getUsername());
-        $email = $this->assertEmail($this->user->getEmail());
-        $name = $this->assertName($this->user->getName());
-        $password = $this->assertPassword($this->user->getPassword());
+        $check = [];
 
-        if (!$username || !$email || !$name || !$password) {
-            return false;
-        }
+        $check['username'] = $this->assertUsername($this->user->getUsername());
+        $check['email'] = $this->assertEmail($this->user->getEmail());
+        $check['name'] = $this->assertName($this->user->getName());
+        $check['password'] = $this->assertPassword($this->user->getPassword());
 
-        return true;
+        return (in_array(false, $check)) ? false : true;
     }
 
     /**
@@ -51,78 +49,84 @@ class UserValidator {
         return $this->errors;
     }
 
+    /**
+     * Validate Username
+     *
+     * @param string $username
+     * @return boolean
+     */
     private function assertUsername($username) : bool
     {
         $validator = new Validator();
 
         $validator->alnum()->lowercase()->noWhitespace()->length(5, 20);
 
-        try {
-            $validator->assert($username);
-
-        } catch (NestedValidationException $e) {
-            $this->errors['username'] = $e->getMessages();
-
-            return false;
-        }
-
-        return true;
+        return $this->assert($validator, $username, 'username');
     }
 
+    /**
+     * Validate Email
+     *
+     * @param string $email
+     * @return boolean
+     */
     private function assertEmail($email) : bool
     {
         $validator = new Validator();
 
         $validator->lowercase()->email()->max(50);
 
-        try {
-            $validator->assert($email);
-
-        } catch (NestedValidationException $e) {
-            $this->errors['email'] = $e->getMessages();
-
-            return false;
-        }
-
-        return true;
+        return $this->assert($validator, $email, 'email');
     }
 
+    /**
+     * Validate Name
+     *
+     * @param string $name
+     * @return boolean
+     */
     private function assertName($name) : bool
     {
         $validator = new Validator();
 
         $validator->alpha()->max(100);
 
-        try {
-            $validator->assert($name);
-
-        } catch (NestedValidationException $e) {
-            $this->errors['name'] = $e->getMessages();
-
-            return false;
-        }
-
-        return true;
+        return $this->assert($validator, $name, 'name');
     }
 
+    /**
+     * Validate Password
+     *
+     * @param string $password
+     * @return boolean
+     */
     private function assertPassword($password) : bool
     {
         $validator = new Validator();
 
         $validator->notEmpty();
 
+        return $this->assert($validator, $password, 'password');
+    }
+
+    /**
+     * @param Validator $validator
+     * @param mixed $field
+     * @param string $name
+     * @return boolean
+     */
+    private function assert(Validator $validator, $field, $name) : bool
+    {
         try {
-            $validator->assert($password);
+            $validator->assert($field);
 
         } catch (NestedValidationException $e) {
-            $this->errors['password'] = $e->getMessages();
+            $this->errors[$name] = $e->getMessage();
 
             return false;
         }
-
         return true;
     }
-
 }
 
 ?>

@@ -17,4 +17,9 @@ return function (App $app) {
         $group->put('/{username}', \App\Application\Actions\User\UpdateUserAction::class)->addMiddleware(new AppJsonMiddleware);
         $group->delete('/{username}', \App\Application\Actions\User\RemoveUserAction::class);
     });
+
+    $app->group('/posts', function (Group $group) use ($container) {
+        $group->get('', \App\Application\Actions\Post\ListPostsAction::class);
+        $group->get('/{id}', \App\Application\Actions\Post\ViewPostAction::class);
+    });
 };

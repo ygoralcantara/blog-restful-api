@@ -5,3 +5,4 @@
 !/logs/README.md
 /var/cache/*
 .phpunit.result.cache
+/request

@@ -10,11 +10,11 @@ class PostMigration extends AbstractMigration
         $postTable = $this->table('posts');
 
         $postTable
-            ->addColumn('title', 'string', ['limit' => 50])
+            ->addColumn('title', 'string', ['limit' => 100])
             ->addColumn('content', 'string', ['limit' => 500])
-            ->addColumn('status', 'boolean')
-            ->addColumn('likes', 'integer', ['null' => true])
-            ->addColumn('dislikes', 'integer', ['null' => true])
+            ->addColumn('status', 'boolean', ['default' => false])
+            ->addColumn('likes', 'integer', ['default' => 0])
+            ->addColumn('dislikes', 'integer', ['default' => 0])
             ->addColumn('created_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
             ->addColumn('published_at', 'timestamp', ['null' => true])
             ->addColumn('username', 'string')

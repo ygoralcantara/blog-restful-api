@@ -1,13 +1,12 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Application\Actions\User;
 
 use App\Domain\DomainException\DomainRecordAlreadyExistsException;
 use App\Domain\User\User;
-use App\Domain\User\UserAlreadyExistsException;
 use App\Domain\User\UserValidator;
 use Psr\Http\Message\ResponseInterface as Response;
-use Slim\Exception\HttpBadRequestException;
 
 class InsertUserAction extends UserAction {
     
@@ -16,7 +15,7 @@ class InsertUserAction extends UserAction {
      */
     public function action() : Response
     {
-        $input = json_decode($this->request->getBody(), true);
+        $input = json_decode($this->request->getBody()->__toString(), true);
 
         $user = new User(
             (isset($input['username']) ? $input['username'] : ''),

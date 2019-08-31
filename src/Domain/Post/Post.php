@@ -83,14 +83,14 @@ class Post implements JsonSerializable{
      * @param string|null $published_at
      */
     public function __construct(
-        $id, 
         $username, 
         $title, 
         $content, 
+        $created_at, 
+        $id = 0,
         $status = false, 
         $likes = 0, 
         $dislikes = 0, 
-        $created_at, 
         $published_at = null)
     {
         $this->id = $id;
@@ -107,7 +107,7 @@ class Post implements JsonSerializable{
     /**
      * Get post ID
      *
-     * @return  int
+     * @return int
      */ 
     public function getId()
     {
@@ -117,9 +117,9 @@ class Post implements JsonSerializable{
     /**
      * Set post ID
      *
-     * @param  int  $id  Post ID
+     * @param int $id Post ID
      *
-     * @return  int
+     * @return int
      */ 
     public function setId(int $id)
     {

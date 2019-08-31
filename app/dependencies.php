@@ -10,7 +10,6 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Processor\UidProcessor;
 use Psr\Container\ContainerInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use Slim\Exception\HttpInternalServerErrorException;
 
 return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
@@ -65,20 +64,3 @@ return function (ContainerBuilder $containerBuilder) {
         
     ]);
 };
-
-/*
-try {
-
-                self::$instance = new PDO(self::$dsn, DB_USER, DB_PASSWORD, array(
-                    'PDO::ATTR_ERRMODE' => 'PDO::ERRMODE_EXCEPTION',
-                    'PDO::ATTR_ORACLE_NULLS' => 'PDO::NULL_EMPTY_STRING'
-                ));
-
-            } catch (PDOException $e) {
-                $e->getMessage();
-            }
-
-        }
-
-        return self::$instance;
-*/

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Application\Actions\User;
 
@@ -26,11 +27,17 @@ class UpdateUserAction extends UserAction {
         }
 
         /** VALIDATE PARAMS */
-        $input = json_decode($this->request->getBody(), true);
+        $input = json_decode($this->request->getBody()->__toString(), true);
 
-        $user->setName((isset($input['name']) ? $input['name'] : ''));
-        $user->setEmail((isset($input['email']) ? $input['email'] : ''));
-        $user->setPassword((isset($input['password']) ? $input['password'] : ''));
+        if (isset($input['name'])) {
+            $user->setName($input['name']);
+        }
+
+        if (isset($input['email']))
+            $user->setEmail($input['email']);
+
+        if (isset($input['password']))
+            $user->setPassword($input['password']);
 
         $userValidator = new UserValidator($user);
 

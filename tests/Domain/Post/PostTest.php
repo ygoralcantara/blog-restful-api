@@ -29,16 +29,16 @@ class PostTest extends TestCase {
             'published_at'  => ($status ? $faker->date("Y-m-d H:i:s", "now") : null),
             'username'      => $faker->userName
         ];
-
+ 
         $post = new Post(
-            $data['post_id'],
             $data['username'],
             $data['title'],
             $data['content'],
+            $data['created_at'],
+            $data['post_id'],
             $data['status'],
             $data['likes'],
             $data['dislikes'],
-            $data['created_at'],
             $data['published_at']
         );
 
