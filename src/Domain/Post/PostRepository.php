@@ -26,6 +26,14 @@ interface PostRepository
      * @return Post
      */
     public function save(Post $post) : Post;
+
+    /**
+     * Remove a Post from database
+     *
+     * @param int $id
+     * @return void
+     */
+    public function remove($id) : void;
 }
 
 ?>

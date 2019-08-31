@@ -5,6 +5,10 @@ namespace App\Application\Handlers;
 
 use App\Application\Actions\ActionError;
 use App\Application\Actions\ActionPayload;
+use App\Domain\DomainException\DomainRecordValidator;
+use App\Domain\DomainException\DomainException;
+use App\Domain\DomainException\DomainRecordAlreadyExistsException;
+use App\Domain\DomainException\DomainRecordNotFoundException;
 use Exception;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Exception\HttpBadRequestException;
@@ -25,6 +29,7 @@ class HttpErrorHandler extends SlimErrorHandler
     protected function respond(): Response
     {
         $exception = $this->exception;
+        
         $statusCode = 500;
         $error = new ActionError(
             ActionError::SERVER_ERROR,
@@ -58,6 +63,21 @@ class HttpErrorHandler extends SlimErrorHandler
             $error->setDescription($exception->getMessage());
         }
 
+        if ($exception instanceof DomainException) {
+            $statusCode = $exception->getCode();
+            $error->setDescription($exception->getMessage());
+
+            if ($exception instanceof DomainRecordValidator) {
+                $error->setType(ActionError::VALIDATION_ERROR);
+                $error->setErrors($exception->getData());
+                
+            } else if ($exception instanceof DomainRecordAlreadyExistsException) {
+                $error->setType(ActionError::BAD_REQUEST);
+            } else if ($exception instanceof DomainRecordNotFoundException) {
+                $error->setType(ActionError::RESOURCE_NOT_FOUND);
+            }
+        }
+        
         $payload = new ActionPayload($statusCode, null, $error);
         $encodedPayload = json_encode($payload, JSON_PRETTY_PRINT);
 

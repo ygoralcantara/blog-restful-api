@@ -15,7 +15,7 @@ class ViewPostAction extends PostAction
     {
         $id = (int) $this->resolveArg('id');
 
-        $post = $this->postRepository->findById($id);
+        $post = $this->postService->getPostById($id);
 
         if (!isset($post)) {
             $this->logger->error("Post of ID `${id}` doesn't exists");

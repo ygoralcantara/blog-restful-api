@@ -10,20 +10,26 @@ class PostValidator {
     /**
      * @var array
      */
-    private $errors = [];
+    private $errors;
 
     /**
      * @var Post
      */
     private $post;
 
-    public function __construct(Post $post)
+    /**
+     * Post Validator Contrusctor
+     *
+     * @param Post $post
+     */
+    public function __construct(Post $post = null)
     {
         $this->post = $post;
+        $this->errors = [];
     }
 
     /**
-     * Validate Post
+     * Validate all fields of a Post
      *
      * @return boolean
      */
@@ -51,6 +57,22 @@ class PostValidator {
     public function getMessagesErrors() : array
     {
         return $this->errors;
+    }
+
+    /**
+     * Set the value of post
+     *
+     * @param Post $post
+     *
+     * @return Post
+     */ 
+    public function setPost(Post $post)
+    {
+        $this->errors = [];
+
+        $this->post = $post;
+
+        return $this->post;
     }
 
     /**
@@ -202,7 +224,6 @@ class PostValidator {
         }
         return true;
     }
-
 }
 
 ?>

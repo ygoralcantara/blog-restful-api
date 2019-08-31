@@ -127,6 +127,54 @@ class PDOPostRepositoryTest extends TestCase {
         $this->assertNotEquals($title, $editPost->getTitle());
         $this->assertNotEquals($content, $editPost->getContent());
     }
+
+    /**
+     * Test remove a post from database
+     *
+     * @return void
+     */
+    public function testRemovePost() : void
+    {
+        $faker = \Faker\Factory::create('pt_BR');
+
+        /** CREATE USER */
+        $newUser = new User(
+            $faker->userName,
+            $faker->name,
+            $faker->email,
+            $faker->password(5, 30)
+        );
+        
+        $newUser = $this->userRepository->save($newUser);
+
+        $this->assertNotEmpty($newUser);
+
+        /** CREATE FAKE POST */
+        $newPost = new Post(
+            $newUser->getUsername(),
+            $faker->sentence(5, true),
+            $faker->realText($faker->numberBetween(50, 200)),
+            $faker->date("Y-m-d H:i:s", "now")
+        );
+        
+        $newPost = $this->postRepository->save($newPost);
+
+        $this->assertNotEmpty($newPost);
+        $this->assertNotEquals(0, $newPost->getId());
+
+        /** ENSURE USER BELONGS TO DATABASE */
+        $post = $this->postRepository->findById($newPost->getId());
+
+        $this->assertNotEmpty($post);
+        $this->assertEquals($newPost->getTitle(), $post->getTitle());
+
+        /** REMOVE POST FROM DATABASE */
+        $this->postRepository->remove($post->getId());
+
+        $emptyPost = $this->postRepository->findById($newPost->getId());
+
+        $this->assertEmpty($emptyPost);
+    }
 }
 
 ?>

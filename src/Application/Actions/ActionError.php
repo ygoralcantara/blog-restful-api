@@ -27,6 +27,11 @@ class ActionError implements JsonSerializable
      */
     private $description;
 
+    /** 
+     * @var array
+     */
+    private $errors;
+
     /**
      * @param string        $type
      * @param string|null   $description
@@ -76,12 +81,33 @@ class ActionError implements JsonSerializable
     /**
      * @return array
      */
+    public function getErrors() : array
+    {
+        return $this->errors;
+    }
+
+    /**
+     * @param array $errors
+     * @return self
+     */
+    public function setErrors($errors = []) : self
+    {
+        $this->errors = $errors;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
     public function jsonSerialize()
     {
         $payload = [
             'type' => $this->type,
             'description' => $this->description,
         ];
+
+        if (!empty($this->errors))
+            $payload = array_merge($payload, $this->errors);
 
         return $payload;
     }

@@ -15,7 +15,7 @@ class ListPostsAction extends PostAction
         $input = $this->request->getQueryParams();
 
         if (empty($input)) {
-            $posts = $this->postRepository->findAll();
+            $posts = $this->postService->getAllPosts();
 
             $this->logger->info("Posts list was viewed");
 

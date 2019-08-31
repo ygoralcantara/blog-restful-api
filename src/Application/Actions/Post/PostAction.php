@@ -4,24 +4,24 @@ declare(strict_types=1);
 namespace App\Application\Actions\Post;
 
 use App\Application\Actions\Action;
-use App\Domain\Post\PostRepository;
+use App\Domain\Post\PostService;
 use Psr\Log\LoggerInterface;
 
 abstract class PostAction extends Action 
 {
     /**
-     * @var PostRepository
+     * @var PostService
      */
-    protected $postRepository;
+    protected $postService;
 
     /**
      * @param LoggerInterface $logger
-     * @param PostRepository  $postRepository
+     * @param PostService $postService
      */
-    public function __construct(LoggerInterface $logger, PostRepository $postRepository)
+    public function __construct(LoggerInterface $logger, PostService $postService)
     {
         parent::__construct($logger);
-        $this->postRepository = $postRepository;
+        $this->postService = $postService;
     }
 
 }

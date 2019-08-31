@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Application\Actions\User;
 
 use App\Domain\DomainException\DomainRecordNotFoundException;
+use App\Domain\DomainException\DomainRecordValidator;
 use App\Domain\User\User;
 use App\Domain\User\UserValidator;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -48,7 +49,7 @@ class UpdateUserAction extends UserAction {
 
             $this->logger->error("UserValidator launched FALSE");
 
-            return $this->respondWithErrors($messages, 400, 'VALIDATION_ERROR', 'POST Params invalid!');
+            throw new DomainRecordValidator($messages);
         }
 
         /** UPDATE USER */

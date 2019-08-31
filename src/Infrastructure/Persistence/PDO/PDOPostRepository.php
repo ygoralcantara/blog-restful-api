@@ -144,6 +144,26 @@ class PDOPostRepository implements PostRepository {
         return $post;
     }
 
+    /**
+     * Remove a Post from database
+     *
+     * @param int $id
+     * @return void
+     */
+    public function remove($id) : void
+    {
+        $sql = "DELETE FROM posts WHERE id = :id";
+
+        $stmt = $this->conn->prepare($sql);
+
+        try {
+            $stmt->execute(['id' => $id]);
+
+        } catch (PDOException $e) {
+            throw new InvalidArgumentException($e->getMessage(), 500);
+        }
+    }
+
 }
 
 ?>

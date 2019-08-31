@@ -41,7 +41,7 @@ class InsertUserAction extends UserAction {
         if (!empty($checkUser)) {
             $this->logger->error("User of username `{$user->getUsername()}` already exists.");
 
-            throw new DomainRecordAlreadyExistsException($this->request, "User of username `{$user->getUsername()}` already exists.");
+            throw new DomainRecordAlreadyExistsException("User of username `{$user->getUsername()}` already exists.");
         }
 
         $user = $this->userRepository->save($user);

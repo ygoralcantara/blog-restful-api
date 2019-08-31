@@ -4,7 +4,7 @@ namespace App\Domain\DomainException;
 
 use Slim\Exception\HttpSpecializedException;
 
-class DomainRecordAlreadyExistsException extends HttpSpecializedException {
+class DomainRecordAlreadyExistsException extends DomainException {
 
     protected $code = 406;
     protected $message = 'Conflict.';

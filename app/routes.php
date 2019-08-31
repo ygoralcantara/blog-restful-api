@@ -21,5 +21,7 @@ return function (App $app) {
     $app->group('/posts', function (Group $group) use ($container) {
         $group->get('', \App\Application\Actions\Post\ListPostsAction::class);
         $group->get('/{id}', \App\Application\Actions\Post\ViewPostAction::class);
+        $group->post('', \App\Application\Actions\Post\InsertPostAction::class)->addMiddleware(new AppJsonMiddleware);
+        $group->put('/{id}', \App\Application\Actions\Post\UpdatePostAction::class)->addMiddleware(new AppJsonMiddleware);
     });
 };
