@@ -34,6 +34,43 @@ interface PostRepository
      * @return void
      */
     public function remove($id) : void;
+
+    /**
+     * Count how much likes or dislikes belongs to Post
+     *
+     * @param Post $post
+     * @param bool $like
+     * @return integer
+     */
+    public function countLikes(Post $post, $like) : int;
+
+    /**
+     * Increase like of a Post
+     *
+     * @param Post $post
+     * @param bool $like
+     * @param string $username
+     * @return Post
+     */
+    public function likePost(Post $post, $like, $username) : Post;
+
+    /**
+     * Remove Like of a Post
+     *
+     * @param Post $post
+     * @param string $username
+     * @return Post
+     */
+    public function removeLike(Post $post, $username) : Post;
+
+    /**
+     * Check if Like Exists
+     *
+     * @param int $post_id
+     * @param string $username
+     * @return boolean
+     */
+    public function checkLike($post_id, $username) : bool;
 }
 
 ?>

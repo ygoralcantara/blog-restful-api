@@ -13,8 +13,6 @@ class PostMigration extends AbstractMigration
             ->addColumn('title', 'string', ['limit' => 100])
             ->addColumn('content', 'string', ['limit' => 500])
             ->addColumn('status', 'boolean', ['default' => false])
-            ->addColumn('likes', 'integer', ['default' => 0])
-            ->addColumn('dislikes', 'integer', ['default' => 0])
             ->addColumn('created_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
             ->addColumn('published_at', 'timestamp', ['null' => true])
             ->addColumn('username', 'string')
@@ -26,9 +24,9 @@ class PostMigration extends AbstractMigration
 
         $postLikeTable
             ->addColumn('is_like', 'boolean')
-            ->addColumn('username', 'string')
+            ->addColumn('user_username', 'string')
             ->addColumn('post_id', 'integer')
-            ->addForeignKey('username', 'users', 'username', ['delete' => 'CASCADE'])
+            ->addForeignKey('user_username', 'users', 'username', ['delete' => 'CASCADE'])
             ->addForeignKey('post_id', 'posts', 'id', ['delete' => 'CASCADE'])
             ->create();
         

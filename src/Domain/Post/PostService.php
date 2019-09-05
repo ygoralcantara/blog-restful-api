@@ -144,6 +144,88 @@ class PostService {
         return $post;
     }
 
+    /**
+     * Remove a Post
+     *
+     * @param int $id
+     * @return void
+     */
+    public function removePost($id) : void
+    {
+        $post = $this->postRepository->findById($id);
+
+        if (!isset($post)) {
+            $message = "Post of ID `{$id}` doesn't exists";
+
+            $this->logger->error($message);
+
+            throw new DomainRecordNotFoundException($message);
+        }
+
+        $this->postRepository->remove($post->getId());
+    }
+
+    /**
+     * User like Post
+     *
+     * @param int $post_id
+     * @param string $username
+     * @param boolean $like
+     * @return void
+     */
+    public function userLikePost($post_id, $username, $like = true) : void 
+    {   
+        $user = $this->userRepository->findByUsername($username);
+        $post = $this->postRepository->findById($post_id);
+
+        if (!isset($user) || !isset($post)) {
+            $message = "";
+            
+            $message .= (!isset($user)) ? "User of username `{$username}` doesn't exists\n" : "";
+            $message .= (!isset($post)) ? "Post of ID `{$post_id}` doesn't exists" : "";
+
+            $this->logger->error($message);
+
+            throw new DomainRecordNotFoundException($message);
+        }
+
+        $this->postRepository->likePost($post, $like, $user->getUsername());
+
+        $message = ($like) ? 'liked' : 'disliked';
+
+        $this->logger->info("User of username `{$user->getUsername()}` ${message} Post of ID {$post->getId()} with success!");
+    }
+
+    public function userRemoveLikePost($post_id, $username) : void
+    {
+        $user = $this->userRepository->findByUsername($username);
+        $post = $this->postRepository->findById($post_id);
+
+        if (!isset($user) || !isset($post)) {
+            $message = "";
+            
+            $message .= (!isset($user)) ? "User of username `{$username}` doesn't exists\n" : "";
+            $message .= (!isset($post)) ? "Post of ID `{$post_id}` doesn't exists" : "";
+
+            $this->logger->error($message);
+
+            throw new DomainRecordNotFoundException($message);
+        }
+
+        $check = $this->postRepository->checkLike($post->getId(), $user->getUsername());
+
+        if (!$check) {
+            $message = "User of username `{$username}` doesn't liked or disliked Post of ID `{$post_id}`";
+
+            $this->logger->error($message);
+
+            throw new DomainRecordNotFoundException($message);
+        }
+
+        $this->postRepository->removeLike($post, $user->getUsername());
+
+        $this->logger->info("User of username `${username}` removed like or dislike from Post of ID `${post_id}` with success");
+    }
 }
 
 ?>

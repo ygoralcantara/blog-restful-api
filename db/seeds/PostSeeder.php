@@ -8,32 +8,55 @@ class PostSeeder extends AbstractSeed
     {
         $faker = Faker\Factory::create('pt_BR');
 
-        $user = [
-            'username'  => $faker->userName,
-            'name'      => $faker->name,
-            'email'     => $faker->email,
-            'password'  => hash('sha256', $faker->password(5, 30))
-        ];
+        /** CREATE FAKE USERS */
+        $users = [];
 
-        $this->insert('users', $user);
+        for ($i=0; $i < 5; $i++) { 
+            $users[] = [
+                'username'  => $faker->userName,
+                'name'      => $faker->name,
+                'email'     => $faker->email,
+                'password'  => hash('sha256', $faker->password(5, 30))
+            ];
+        }
 
+        $this->insert('users', $users);
+
+        /** CREATE FAKE POSTS */
         $data = [];
 
-        for ($i=0; $i < 5; $i++) {
+        for ($i=0; $i < 10; $i++) {
             $status = $faker->boolean(70);
 
             $data[] = [
                 'title'         => $faker->sentence(5, true),
                 'content'       => $faker->realText($faker->numberBetween(50, 200)),
                 'status'        => $status,
-                'likes'         => $faker->randomNumber(2, true),
-                'dislikes'      => $faker->randomNumber(1, true),
                 'created_at'    => $faker->date("Y-m-d H:i:s", "now"),
                 'published_at'  => ($status ? $faker->date("Y-m-d H:i:s", "now") : null),
-                'username'      => $user['username']
+                'username'      => $users[0]['username']
             ];
         }
-
+        
         $this->insert('posts', $data);
+
+        /** CREATE FAKES LIKES AND DISLIKES */
+        $posts = $this->fetchAll("SELECT * FROM posts");
+
+        $data = [];
+
+        foreach ($users as $user) {
+            foreach ($posts as $post) {
+                
+                $data[] = [
+                    'post_id'       => $post['id'],
+                    'user_username' => $user['username'],
+                    'is_like'       => $faker->boolean(60)
+                ];
+
+            }
+        }
+        
+        $this->insert('posts_like', $data);
     }
 }

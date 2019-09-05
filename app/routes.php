@@ -23,5 +23,10 @@ return function (App $app) {
         $group->get('/{id}', \App\Application\Actions\Post\ViewPostAction::class);
         $group->post('', \App\Application\Actions\Post\InsertPostAction::class)->addMiddleware(new AppJsonMiddleware);
         $group->put('/{id}', \App\Application\Actions\Post\UpdatePostAction::class)->addMiddleware(new AppJsonMiddleware);
+        $group->delete('/{id}', \App\Application\Actions\Post\RemovePostAction::class);
+
+        /** LIKE */
+        $group->post('/{id}/like/{username}', \App\Application\Actions\Post\LikedPostAction::class);
+        $group->delete('/{id}/like/{username}', \App\Application\Actions\Post\RemoveLikePostAction::class);
     });
 };

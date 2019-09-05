@@ -35,7 +35,12 @@ class PDOPostRepository implements PostRepository {
      */
     public function findAll() : array
     {
-        $sql = "SELECT * FROM posts ORDER BY title ASC";
+        $sql = "SELECT 
+                    p.*,
+                    (SELECT count(*) FROM posts_like AS pl WHERE pl.post_id = p.id AND pl.is_like = true) AS likes,
+                    (SELECT count(*) FROM posts_like AS pl WHERE pl.post_id = p.id AND pl.is_like = false) AS dislikes
+                    FROM posts AS p 
+                    ORDER BY p.title ASC";
 
         try {
             $result = $this->conn->query($sql)->fetchAll();
@@ -71,7 +76,12 @@ class PDOPostRepository implements PostRepository {
      */
     public function findById($id) : ?Post
     {
-        $sql = "SELECT * FROM posts WHERE id = :id";
+        $sql = "SELECT
+                    p.*,
+                    (SELECT count(*) FROM posts_like AS pl WHERE pl.post_id = p.id AND pl.is_like = true) AS likes,
+                    (SELECT count(*) FROM posts_like AS pl WHERE pl.post_id = p.id AND pl.is_like = false) AS dislikes
+                    FROM posts AS p 
+                    WHERE p.id = :id";
 
         $stmt = $this->conn->prepare($sql);
 
@@ -162,6 +172,137 @@ class PDOPostRepository implements PostRepository {
         } catch (PDOException $e) {
             throw new InvalidArgumentException($e->getMessage(), 500);
         }
+    }
+
+    /**
+     * Count how much likes or dislikes belongs to Post
+     *
+     * @param Post $post
+     * @param bool $like
+     * @return integer
+     */
+    public function countLikes(Post $post, $like) : int
+    {
+        $sql = "SELECT count(*) FROM posts_like AS pl
+                    WHERE pl.post_id = :id AND pl.is_like = :like";
+
+        $stmt = $this->conn->prepare($sql);
+
+        try {
+            $id = $post->getId();
+
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->bindParam(':like', $like, PDO::PARAM_BOOL);
+
+            $stmt->execute();
+
+            $row = $stmt->fetch();
+
+        } catch (PDOException $e) {
+            throw new InvalidArgumentException($e->getMessage());
+        }
+
+        return intval($row['count']);
+    }
+
+    /**
+     * Increase like of a Post
+     *
+     * @param Post $post
+     * @param bool $like
+     * @param string $username
+     * @return Post
+     */
+    public function likePost(Post $post, $like, $username) : Post
+    {
+        $check = $this->checkLike($post->getId(), $username);
+        
+        if ($check) {
+            $sql = "UPDATE posts_like SET is_like = :like
+                        WHERE user_username = :username AND post_id = :id";    
+        } 
+        else {
+            $sql = "INSERT INTO posts_like (is_like, post_id, user_username)
+                        VALUES (:like, :id, :username)";
+        }
+        
+        $stmt = $this->conn->prepare($sql);
+
+        try {
+            $id = $post->getId();
+
+            $stmt->bindParam(':like', $like, PDO::PARAM_BOOL);
+            $stmt->bindParam(':username', $username, PDO::PARAM_STR);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+
+            $stmt->execute();
+
+        } catch (PDOException $e) {
+            throw new InvalidArgumentException($e->getMessage());
+        }
+
+        $post->setLikes($this->countLikes($post, true));
+        $post->setDislikes($this->countLikes($post, false));
+
+        return $post;
+    }
+
+    /**
+     * Remove Like of a Post
+     *
+     * @param Post $post
+     * @param string $username
+     * @return Post
+     */
+    public function removeLike(Post $post, $username) : Post
+    {
+        $sql = "DELETE FROM posts_like WHERE post_id = :post_id AND user_username = :user_username";
+
+        $stmt = $this->conn->prepare($sql);
+
+        try {
+            $stmt->execute([
+                'post_id'       => $post->getId(),
+                'user_username' => $username
+            ]);
+
+        } catch (PDOException $e) {
+            throw new InvalidArgumentException($e->getMessage());
+        }
+
+        $post->setLikes($this->countLikes($post, true));
+        $post->setDislikes($this->countLikes($post, false));
+
+        return $post;
+    }
+
+    /**
+     * Check if Like Exists
+     *
+     * @param int $post_id
+     * @param string $username
+     * @return boolean
+     */
+    public function checkLike($post_id, $username) : bool
+    {
+        $sql = "SELECT count(*) FROM posts_like AS pl 
+                    WHERE pl.post_id = :id AND pl.user_username = :username";
+        
+        $stmt = $this->conn->prepare($sql);
+
+        try {
+            $stmt->bindParam(':id', $post_id, PDO::PARAM_INT);
+            $stmt->bindParam(':username', $username, PDO::PARAM_STR);
+
+            $stmt->execute();
+
+            $row = $stmt->fetch();
+
+        } catch (PDOException $e) {
+            throw new InvalidArgumentException($e->getMessage());
+        }
+
+        return (intval($row['count']) == 0) ? false : true;
     }
 
 }

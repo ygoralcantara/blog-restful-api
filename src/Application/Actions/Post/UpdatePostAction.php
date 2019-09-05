@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace App\Application\Actions\Post;
 
-use App\Domain\Post\Post;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Exception\HttpBadRequestException;
 
@@ -27,4 +26,5 @@ class UpdatePostAction extends PostAction
         return $this->respondWithData($post);
     }
 }
+
 ?>
