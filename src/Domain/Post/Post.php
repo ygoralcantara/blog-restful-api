@@ -70,6 +70,13 @@ class Post implements JsonSerializable{
     private $username;
 
     /**
+     * Post tags
+     *
+     * @var array
+     */
+    private $tags;
+
+    /**
      * Post constructor
      *
      * @param int $id
@@ -81,6 +88,7 @@ class Post implements JsonSerializable{
      * @param int $dislikes
      * @param string $created_at
      * @param string|null $published_at
+     * @param array $tags
      */
     public function __construct(
         $username, 
@@ -91,7 +99,8 @@ class Post implements JsonSerializable{
         $status = false, 
         $likes = 0, 
         $dislikes = 0, 
-        $published_at = null)
+        $published_at = null,
+        $tags = [])
     {
         $this->id = $id;
         $this->username = $username;
@@ -102,6 +111,7 @@ class Post implements JsonSerializable{
         $this->dislikes = $dislikes;
         $this->created_at = $created_at;
         $this->published_at = $published_at;
+        $this->tags = $tags;
     }
 
     /**
@@ -321,6 +331,30 @@ class Post implements JsonSerializable{
     }
 
     /**
+     * Get post tags
+     *
+     * @return  array
+     */ 
+    public function getTags()
+    {
+        return $this->tags;
+    }
+
+    /**
+     * Set post tags
+     *
+     * @param array $tags Post tags
+     *
+     * @return array
+     */ 
+    public function setTags(array $tags)
+    {
+        $this->tags = $tags;
+
+        return $this->tags;
+    }
+
+    /**
      * Post Json
      *
      * @return array
@@ -336,7 +370,8 @@ class Post implements JsonSerializable{
             'dislikes'      => $this->dislikes,
             'created_at'    => $this->created_at,
             'published_at'  => $this->published_at,
-            'username'      => $this->username
+            'username'      => $this->username,
+            'tags'          => $this->tags
         ];
     }
 }

@@ -58,5 +58,36 @@ class PostSeeder extends AbstractSeed
         }
         
         $this->insert('posts_like', $data);
+
+        /** CREATE FAKES TAGS AND ATTACH TO POSTS */
+        $data = [];
+
+        for ($i=0; $i < 10; $i++) { 
+            $data[] = [
+                'name'  => $faker->word
+            ];
+        }
+
+        $this->insert('tags', $data);
+
+        $tags = $this->fetchAll("SELECT * FROM tags");
+
+        $data = [];
+
+        foreach ($posts as $post) {
+            foreach ($tags as $tag) {
+                
+                $prob = $faker->boolean(70);
+
+                if ($prob) {
+                    $data[] = [
+                        'post_id' => $post['id'],
+                        'tag_id'  => $tag['id']
+                    ];
+                }
+            }
+        }
+
+        $this->insert('posts_tags', $data);
     }
 }

@@ -35,15 +35,22 @@ class PDOPostRepository implements PostRepository {
      */
     public function findAll() : array
     {
+        $sql_tags = "SELECT
+                        t.name
+                        FROM posts_tags AS pt
+                        INNER JOIN tags AS t ON pt.tag_id = t.id
+                        WHERE pt.post_id = p.id";
+
         $sql = "SELECT 
                     p.*,
                     (SELECT count(*) FROM posts_like AS pl WHERE pl.post_id = p.id AND pl.is_like = true) AS likes,
-                    (SELECT count(*) FROM posts_like AS pl WHERE pl.post_id = p.id AND pl.is_like = false) AS dislikes
+                    (SELECT count(*) FROM posts_like AS pl WHERE pl.post_id = p.id AND pl.is_like = false) AS dislikes,
+                    ARRAY( ${sql_tags} ) AS tags
                     FROM posts AS p 
                     ORDER BY p.title ASC";
 
         try {
-            $result = $this->conn->query($sql)->fetchAll();
+            $result = $this->conn->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
         } catch (PDOException $e) {
             throw new InvalidArgumentException($e->getMessage(), 500);
@@ -52,6 +59,14 @@ class PDOPostRepository implements PostRepository {
         $posts = [];
 
         foreach ($result as $row) {
+            
+            if ($row['tags'] !== "{}") {
+                $tags = explode(',', str_replace(['{', '}'], '', $row['tags']));
+            }
+            else {
+                $tags = [];
+            }
+
             $posts[] = new Post(
                 $row['username'],
                 $row['title'],
@@ -61,7 +76,8 @@ class PDOPostRepository implements PostRepository {
                 $row['status'],
                 $row['likes'],
                 $row['dislikes'],
-                $row['published_at']
+                $row['published_at'],
+                $tags
             );
         }
 
@@ -76,10 +92,17 @@ class PDOPostRepository implements PostRepository {
      */
     public function findById($id) : ?Post
     {
+        $sql_tags = "SELECT
+                        t.name
+                        FROM posts_tags AS pt
+                        INNER JOIN tags AS t ON pt.tag_id = t.id
+                        WHERE pt.post_id = p.id";
+
         $sql = "SELECT
                     p.*,
                     (SELECT count(*) FROM posts_like AS pl WHERE pl.post_id = p.id AND pl.is_like = true) AS likes,
-                    (SELECT count(*) FROM posts_like AS pl WHERE pl.post_id = p.id AND pl.is_like = false) AS dislikes
+                    (SELECT count(*) FROM posts_like AS pl WHERE pl.post_id = p.id AND pl.is_like = false) AS dislikes,
+                    ARRAY( ${sql_tags} ) AS tags
                     FROM posts AS p 
                     WHERE p.id = :id";
 
@@ -94,7 +117,17 @@ class PDOPostRepository implements PostRepository {
             throw new InvalidArgumentException($e->getMessage(), 500);
         }
 
-        return (empty($result)) ? null : new Post(
+        if (empty($result))
+            return null;
+
+        if ($result['tags'] !== "{}") {
+            $tags = explode(',', str_replace(['{', '}'], '', $result['tags']));
+        }
+        else {
+            $tags = [];
+        }
+
+        return new Post(
             $result['username'],
             $result['title'],
             $result['content'],
@@ -103,7 +136,8 @@ class PDOPostRepository implements PostRepository {
             $result['status'],
             $result['likes'],
             $result['dislikes'],
-            $result['published_at']
+            $result['published_at'],
+            $tags
         );
     }
 

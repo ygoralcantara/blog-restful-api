@@ -34,7 +34,7 @@ class PostMigration extends AbstractMigration
         $tagsTable = $this->table('tags');
 
         $tagsTable
-            ->addColumn('name', 'string', ['limit' => 30])
+            ->addColumn('name', 'string', ['limit' => 50])
             ->addIndex('name', ['unique' => true])
             ->create();
 

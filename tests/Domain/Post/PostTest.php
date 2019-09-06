@@ -29,6 +29,14 @@ class PostTest extends TestCase {
             'published_at'  => ($status ? $faker->date("Y-m-d H:i:s", "now") : null),
             'username'      => $faker->userName
         ];
+
+        $tags = [];
+
+        for ($i=0; $i < 5; $i++) { 
+            $tags[] = $faker->word;
+        }
+
+        $data['tags'] = $tags;
  
         $post = new Post(
             $data['username'],
@@ -39,7 +47,8 @@ class PostTest extends TestCase {
             $data['status'],
             $data['likes'],
             $data['dislikes'],
-            $data['published_at']
+            $data['published_at'],
+            $data['tags']
         );
 
         $data['status'] = ($status ? 'published' : 'in revision');
