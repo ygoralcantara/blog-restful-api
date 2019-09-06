@@ -18,7 +18,7 @@ class PostValidatorTest extends TestCase {
         $post = new Post(
             'Ygor.Alcantara',
             $faker->text(200),
-            $faker->text(600),
+            $faker->text(1000),
             $faker->date("Y-m-d", "now")
         );
 

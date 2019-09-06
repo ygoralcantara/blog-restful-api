@@ -23,7 +23,8 @@
     "require-dev": {
         "fzaninotto/faker": "^1.8",
         "phpunit/phpunit": "^8",
-        "robmorgan/phinx": "^0.10.8"
+        "robmorgan/phinx": "^0.10.8",
+        "symfony/console": "v3.4.27"
     },
     "autoload": {
         "psr-4": {
