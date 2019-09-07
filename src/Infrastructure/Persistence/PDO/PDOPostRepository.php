@@ -18,6 +18,11 @@ class PDOPostRepository implements PostRepository {
      */
     private $conn;
 
+    /**
+     * PDOPostRepository Constructor
+     *
+     * @param ContainerInterface $container
+     */
     public function __construct(ContainerInterface $container)
     {
         if ($container->has('pdo-conn')) {

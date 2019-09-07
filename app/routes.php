@@ -26,7 +26,14 @@ return function (App $app) {
         $group->delete('/{id}', \App\Application\Actions\Post\RemovePostAction::class);
 
         /** LIKE */
-        $group->post('/{id}/like/{username}', \App\Application\Actions\Post\LikedPostAction::class);
+        $group->post('/{id}/like/{username}', \App\Application\Actions\Post\LikedPostAction::class)->addMiddleware(new AppJsonMiddleware);
         $group->delete('/{id}/like/{username}', \App\Application\Actions\Post\RemoveLikePostAction::class);
+    });
+
+    $app->group('/tags', function (Group $group) use ($container) {
+        $group->get('', \App\Application\Actions\Tag\ListTagsAction::class);
+        $group->get('/{name}', \App\Application\Actions\Tag\ViewTagAction::class);
+        $group->post('', \App\Application\Actions\Tag\InsertTagAction::class)->addMiddleware(new AppJsonMiddleware);
+        $group->delete('/{name}', \App\Application\Actions\Tag\RemoveTagAction::class);
     });
 };
