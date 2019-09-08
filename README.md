@@ -66,6 +66,8 @@ For Start the Server run
 
 ``` POST /posts/5/like/ygoralcmd ``` - User (`username = ygoralcmd`) like or dislike a post (`id = 5`)
 
+``` DELETE /posts/5/like/ygoralcmd ``` - User (`username = ygoralcmd`) remove like or dislike from post (`id = 5`)
+
 ``` POST /posts/5/tag ``` - Add tag to post
 
 ``` DELETE /posts/5/tag/science ``` - Remove tag to post
