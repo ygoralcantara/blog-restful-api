@@ -79,7 +79,7 @@ class PDOTagRepositoryTest extends TestCase
     {
         $faker = \Faker\Factory::create('pt_BR');
 
-        $tag = new Tag($faker->word);
+        $tag = new Tag($faker->unique()->word);
 
         $tag = $this->tagRepository->save($tag);
 
@@ -90,6 +90,8 @@ class PDOTagRepositoryTest extends TestCase
 
         $this->assertNotEmpty($newTag);
         $this->assertEquals($tag->getName(), $newTag->getName());
+
+        $this->tagRepository->remove($tag);
     }
 
     /**

@@ -2,6 +2,8 @@
 
 namespace App\Domain\Post;
 
+use App\Domain\Tag\Tag;
+
 interface PostRepository 
 {
     /**
@@ -71,6 +73,24 @@ interface PostRepository
      * @return boolean
      */
     public function checkLike($post_id, $username) : bool;
+
+    /**
+     * Add Tag to Post
+     *
+     * @param Post $post
+     * @param Tag $tag
+     * @return Post
+     */
+    public function addTag(Post $post, Tag $tag) : Post;
+
+    /**
+     * Remove Tag to Post
+     *
+     * @param Post $post
+     * @param Tag $tag
+     * @return Post
+     */
+    public function removeTag(Post $post, Tag $tag) : Post;
 }
 
 ?>

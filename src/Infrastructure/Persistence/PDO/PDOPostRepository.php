@@ -7,6 +7,7 @@ use PDO;
 use PDOException;
 use InvalidArgumentException;
 use App\Domain\Post\PostRepository;
+use App\Domain\Tag\Tag;
 use Psr\Container\ContainerInterface;
 
 class PDOPostRepository implements PostRepository {
@@ -342,6 +343,78 @@ class PDOPostRepository implements PostRepository {
         }
 
         return (intval($row['count']) == 0) ? false : true;
+    }
+
+    /**
+     * Add Tag to Post
+     *
+     * @param Post $post
+     * @param Tag $tag
+     * @return Post
+     */
+    public function addTag(Post $post, Tag $tag) : Post 
+    {
+        $sql = "INSERT INTO posts_tags (post_id, tag_id) VALUES (:post_id, :tag_id)";
+
+        $stmt = $this->conn->prepare($sql);
+
+        try {
+            $post_id = $post->getId();
+            $tag_id = $tag->getId();
+
+            $stmt->bindParam(':post_id', $post_id, PDO::PARAM_INT);
+            $stmt->bindParam(':tag_id', $tag_id, PDO::PARAM_INT);
+
+            $stmt->execute();
+
+        } catch (PDOException $e) {
+            throw new InvalidArgumentException($e->getMessage());
+        }
+
+        $post_tags = $post->getTags();
+
+        $post_tags[] = $tag->getName();
+
+        $post->setTags($post_tags);
+
+        return $post;
+    }
+
+    /**
+     * Remove Tag to Post
+     *
+     * @param Post $post
+     * @param Tag $tag
+     * @return Post
+     */
+    public function removeTag(Post $post, Tag $tag) : Post
+    {
+        $sql = "DELETE FROM posts_tags WHERE post_id = :post_id AND tag_id = :tag_id";
+
+        $stmt = $this->conn->prepare($sql);
+
+        try {
+            $post_id = $post->getId();
+            $tag_id = $tag->getId();
+
+            $stmt->bindParam(':post_id', $post_id, PDO::PARAM_INT);
+            $stmt->bindParam(':tag_id', $tag_id, PDO::PARAM_INT);
+
+            $stmt->execute();
+
+        } catch (PDOException $e) {
+            throw new InvalidArgumentException($e->getMessage());
+        }
+
+        $post_tags = $post->getTags();
+
+        $index = array_search($tag->getName(), $post_tags);
+
+        unset($post_tags[$index]);
+
+        $post->setTags($post_tags);
+
+        return $post;
     }
 
 }

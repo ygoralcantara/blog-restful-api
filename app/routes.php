@@ -28,6 +28,10 @@ return function (App $app) {
         /** LIKE */
         $group->post('/{id}/like/{username}', \App\Application\Actions\Post\LikedPostAction::class)->addMiddleware(new AppJsonMiddleware);
         $group->delete('/{id}/like/{username}', \App\Application\Actions\Post\RemoveLikePostAction::class);
+
+        /** TAGS */
+        $group->post('/{id}/tag', \App\Application\Actions\Post\AddTagPostAction::class)->addMiddleware(new AppJsonMiddleware);
+        $group->delete('/{id}/tag/{tagname}', \App\Application\Actions\Post\RemoveTagPostAction::class);
     });
 
     $app->group('/tags', function (Group $group) use ($container) {

@@ -11,8 +11,16 @@ class UserSeeder extends AbstractSeed
         $data = [];
 
         for ($i=0; $i < 10; $i++) { 
+
+            do {
+                $username = $faker->userName;
+
+                $check = $this->fetchRow("SELECT * FROM users WHERE username = '${username}'");
+
+            } while (!empty($check));
+
             $data[] = [
-                'username'  => $faker->userName,
+                'username'  => $username,
                 'name'      => $faker->name,
                 'email'     => $faker->email,
                 'password'  => hash('sha256', $faker->password(5, 30)),

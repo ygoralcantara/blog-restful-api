@@ -60,15 +60,25 @@ class PostSeeder extends AbstractSeed
         $this->insert('posts_like', $data);
 
         /** CREATE FAKES TAGS AND ATTACH TO POSTS */
-        $data = [];
+        //$data = [];
 
-        for ($i=0; $i < 10; $i++) { 
-            $data[] = [
-                'name'  => $faker->word
+        for ($i=0; $i < 5; $i++) {
+            
+            do {
+                $name = $faker->word;
+
+                $check = $this->fetchRow("SELECT * FROM tags WHERE name = '${name}'");    
+
+            } while (!empty($check));
+
+            $data = [
+                'name'  => $name
             ];
+
+            $this->insert('tags', $data);
         }
 
-        $this->insert('tags', $data);
+        //$this->insert('tags', $data);
 
         $tags = $this->fetchAll("SELECT * FROM tags");
 

@@ -3,10 +3,15 @@
 namespace App\Infrastructure\Persistence\PDO;
 
 use Tests\TestCase;
+use App\Domain\Tag\Tag;
 use App\Domain\Post\Post;
 use App\Domain\User\User;
+use App\Domain\Tag\TagRepository;
 use App\Domain\Post\PostRepository;
 use App\Domain\User\UserRepository;
+use App\Infrastructure\Persistence\PDO\PDOTagRepository;
+use App\Infrastructure\Persistence\PDO\PDOPostRepository;
+use App\Infrastructure\Persistence\PDO\PDOUserRepository;
 
 class PDOPostRepositoryTest extends TestCase {
 
@@ -25,6 +30,13 @@ class PDOPostRepositoryTest extends TestCase {
     private $userRepository;
 
     /**
+     * PDO Tag Repository
+     *
+     * @var TagRepository
+     */
+    private $tagRepository;
+
+    /**
      * Set up dependencies before run tests
      *
      * @return void
@@ -35,6 +47,7 @@ class PDOPostRepositoryTest extends TestCase {
 
         $this->postRepository = new PDOPostRepository($container);
         $this->userRepository = new PDOUserRepository($container);
+        $this->tagRepository = new PDOTagRepository($container);
     }
 
     /**
@@ -264,6 +277,66 @@ class PDOPostRepositoryTest extends TestCase {
 
         $this->assertIsBool($check);
         $this->assertEquals(false, $check);
+    }
+
+    /**
+     * Test add and remove a tag from Post
+     *
+     * @return void
+     */
+    public function testTag() : void
+    {
+        $faker = \Faker\Factory::create('pt_BR');
+
+        $user = $this->userRepository->findAll()[0];
+
+        $this->assertNotEmpty($user);
+
+        /** CREATE FAKE POST */
+        $post = new Post(
+            $user->getUsername(),
+            $faker->sentence(5, true),
+            $faker->realText($faker->numberBetween(50, 200)),
+            $faker->date("Y-m-d H:i:s", "now")
+        );
+        
+        $post = $this->postRepository->save($post);
+
+        $this->assertNotEmpty($post);
+        $this->assertNotEquals(0, $post->getId());
+
+        $tag = new Tag($faker->unique()->word);
+
+        $tag = $this->tagRepository->save($tag);
+
+        $newTag = $this->tagRepository->findById($tag->getId());
+
+        $this->assertNotEmpty($tag);
+        $this->assertNotEquals(0, $tag->getId());
+        $this->assertNotEmpty($newTag);
+        $this->assertEquals($tag->getId(), $newTag->getId());
+        
+        /** ADD TAG TO POST */
+        $post = $this->postRepository->addTag($post, $tag);
+
+        $newPost = $this->postRepository->findById($post->getId());
+
+        $this->assertNotEmpty($newPost);
+        $this->assertContains($tag->getName(), $post->getTags());
+        $this->assertContains($tag->getName(), $newPost->getTags());
+
+        /** REMOVE TAG TO POST */
+        $post = $this->postRepository->removeTag($post, $tag);
+
+        $newPost = $this->postRepository->findById($post->getId());
+
+        $this->assertNotEmpty($post);
+        $this->assertNotContains($tag->getName(), $post->getTags());
+        $this->assertNotContains($tag->getName(), $newPost->getTags());
+
+        /** DELETE */
+        $this->postRepository->remove($post->getId());
+        $this->tagRepository->remove($tag);
     }
 
 }

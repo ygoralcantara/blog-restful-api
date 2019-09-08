@@ -2,8 +2,10 @@
 
 namespace App\Domain\Post;
 
+use App\Domain\DomainException\DomainRecordAlreadyExistsException;
 use App\Domain\DomainException\DomainRecordNotFoundException;
 use App\Domain\DomainException\DomainRecordValidator;
+use App\Domain\Tag\TagRepository;
 use App\Domain\User\UserRepository;
 use DomainException;
 use InvalidArgumentException;
@@ -22,6 +24,11 @@ class PostService {
     private $userRepository;
 
     /** 
+     * @var TagRepository
+     */
+    private $tagRepository;
+
+    /** 
      * @var PostValidator 
      */
     private $postValidator;
@@ -37,10 +44,16 @@ class PostService {
      * @param PostRepository $postRepository
      * @param UserRepository $userRepository
      */
-    public function __construct(PostRepository $postRepository, UserRepository $userRepository, PostValidator $postValidator, LoggerInterface $logger)
+    public function __construct(
+        PostRepository $postRepository, 
+        UserRepository $userRepository,
+        TagRepository $tagRepository, 
+        PostValidator $postValidator, 
+        LoggerInterface $logger)
     {
         $this->postRepository = $postRepository;
         $this->userRepository = $userRepository;
+        $this->tagRepository = $tagRepository;
         $this->postValidator = $postValidator;
         $this->logger = $logger;
     }
@@ -196,6 +209,13 @@ class PostService {
         $this->logger->info("User of username `{$user->getUsername()}` ${message} Post of ID {$post->getId()} with success!");
     }
 
+    /**
+     * Remove Like to Post
+     *
+     * @param int $post_id
+     * @param string $username
+     * @return void
+     */
     public function userRemoveLikePost($post_id, $username) : void
     {
         $user = $this->userRepository->findByUsername($username);
@@ -225,6 +245,82 @@ class PostService {
         $this->postRepository->removeLike($post, $user->getUsername());
 
         $this->logger->info("User of username `${username}` removed like or dislike from Post of ID `${post_id}` with success");
+    }
+
+    /**
+     * Add Tag to Post
+     *
+     * @param int $post_id
+     * @param string $tag_name
+     * @return void
+     */
+    public function addTagToPost($post_id, $tag_name) : void
+    {
+        $post = $this->postRepository->findById($post_id);
+        $tag = $this->tagRepository->findByName($tag_name);
+
+        if (!isset($post) || !isset($tag)) {
+            $message = " | ";
+
+            $message .= (!isset($post) ? "Post of ID `${post_id}` doesn't exists | " : "");
+            $message .= (!isset($tag) ? "Tag of name `${tag_name}` doesn't exists | " : "");
+
+            $this->logger->error($message);
+
+            throw new DomainRecordNotFoundException($message);
+        }
+
+        if (in_array($tag->getName(), $post->getTags())) {
+            $message = "Tag of name `${tag_name}` already added to Post of ID ${post_id}";    
+        
+            $this->logger->error($message);
+
+            throw new DomainRecordAlreadyExistsException($message);
+        }
+
+        $this->postRepository->addTag($post, $tag);
+
+        $message = "Tag of name `${tag_name}` added to Post of ID `${post_id}` with success!";
+
+        $this->logger->info($message);
+    }
+
+    /**
+     * Add Tag to Post
+     *
+     * @param int $post_id
+     * @param string $tag_name
+     * @return void
+     */
+    public function removeTagToPost($post_id, $tag_name) : void
+    {
+        $post = $this->postRepository->findById($post_id);
+        $tag = $this->tagRepository->findByName($tag_name);
+
+        if (!isset($post) || !isset($tag)) {
+            $message = " | ";
+
+            $message .= (!isset($post) ? "Post of ID `${post_id}` doesn't exists | " : "");
+            $message .= (!isset($tag) ? "Tag of name `${tag_name}` doesn't exists | " : "");
+
+            $this->logger->error($message);
+
+            throw new DomainRecordNotFoundException($message);
+        }
+
+        if (!in_array($tag->getName(), $post->getTags())) {
+            $message = "Tag of name `${tag_name}` doesn't exists in Post of ID ${post_id}";    
+        
+            $this->logger->error($message);
+
+            throw new DomainRecordNotFoundException($message);
+        }
+
+        $this->postRepository->removeTag($post, $tag);
+
+        $message = "Tag of name `${tag_name}` removed to Post of ID `${post_id}` with success!";
+
+        $this->logger->info($message);
     }
 }
 

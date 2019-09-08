@@ -19,11 +19,15 @@ class LikedPostAction extends PostAction
         $input = json_decode($this->request->getBody()->__toString(), true);
 
         if (!isset($input['like'])) {
-            throw new HttpBadRequestException($this->request, "Param like invalid");
+            $this->logger->error("Param `like` invalid");
+
+            throw new HttpBadRequestException($this->request, "Param `like` invalid");
         }
 
         if (!is_bool($input['like'])) {
-            throw new HttpBadRequestException($this->request, "Param like have to be bool type");
+            $this->logger->error("Param `like` have to be bool type");
+
+            throw new HttpBadRequestException($this->request, "Param `like` have to be bool type");
         }
  
         $this->postService->userLikePost($id, $username, $input['like']);
